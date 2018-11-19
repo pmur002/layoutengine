@@ -1,0 +1,47 @@
+
+import("grid")
+
+importFrom("xml2",
+           "read_html",
+           "read_xml",
+           "xml_add_child",
+           "xml_find_first")
+
+importFrom("htmltools",
+           "tags")
+
+importFrom("gdtools",
+           "font_family_exists",
+           "match_family",
+           "sys_fonts")
+
+importFrom("extrafont",
+           "fonttable")
+
+export("htmlDocument",
+       "htmlElement",
+
+       "makeLayout",
+       "makeEngine",
+       
+       "flow",
+       "fontFiles",
+       
+       "grid.html",
+       "htmlGrob")
+
+S3method("makeContent", "htmlgrob")
+
+S3method("flow", "htmlDocument")
+S3method("flow", "htmlElement")
+
+S3method("htmlDocument", "character")
+S3method("htmlDocument", "xml_document")
+
+S3method("htmlElement", "character")
+S3method("htmlElement", "xml_node")
+S3method("htmlElement", "xtable")
+
+S3method("htmlGrob", "default")
+S3method("htmlGrob", "flowedhtml")
+S3method("htmlGrob", "htmlDocument")
