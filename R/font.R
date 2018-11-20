@@ -104,7 +104,7 @@ fontCSS <- function(fonts, device) {
         postscriptFontCSS(fonts)
     } else if (device == "pdf") {
         pdfFontCSS(fonts)
-    } else if (grep("cairo", device)) {
+    } else if (cairoDevice(device)) {
         cairoFontCSS(fonts)
     } else {
         stop(paste0("Device ", device, " unsupported"))
@@ -129,7 +129,7 @@ cairoFirstFont <- function(fonts) {
 firstFont <- function(fonts, device) {
     if (device %in% c("postscript", "pdf")) {
         Type1FirstFont(fonts)
-    } else if (grep("cairo", device)) {
+    } else if (cairoDevice(device)) {
         cairoFirstFont(fonts)
     } else {
         stop(paste0("Device ", device, " unsupported"))
@@ -162,7 +162,7 @@ cairoFontFiles <- function(fonts) {
 fontFiles <- function(fonts, device) {
     if (device %in% c("postscript", "pdf")) {
         Type1FontFiles(fonts)
-    } else if (grep("cairo", device)) {
+    } else if (cairoDevice(device)) {
         cairoFontFiles(fonts)
     } else {
         stop(paste0("Device ", device, " unsupported"))
