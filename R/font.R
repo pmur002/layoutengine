@@ -143,7 +143,7 @@ Type1FontFiles <- function(fonts) {
     unlist(lapply(checkedFonts,
                   function(font) {
                       which <- ft$FamilyName == font
-                      as.character(ft$filename[which])
+                      as.character(ft$fontfile[which])
                   }))
 }
 
