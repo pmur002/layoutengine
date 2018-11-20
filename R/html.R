@@ -43,11 +43,6 @@ htmlElement.xtable <- function(x, ...) {
 ## Valid XML, just check ok HTML
 htmlElement.xml_node <- function(x, fonts="sans", ...) {
     doc <- read_html(tags$html(tags$body(HTML(as.character(x)))))
-    xml_add_child(doc, "head")
-    xml_add_child(xml_find_first(doc, "head"),
-                  "style",
-                  type="text/css",
-                  fontCSS(fonts))
     class(doc) <- c("htmlElement", "htmlDocument", class(doc))
     doc
 }
