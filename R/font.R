@@ -140,7 +140,7 @@ Type1FontFiles <- function(fonts) {
     ft <- get("fontTable", envir=layoutEngineEnv)
     mappedFonts <- mapGenericFonts(fonts)
     checkedFonts <- checkMissingType1Fonts(mappedFonts, ft)
-    unlist(lapply(fonts,
+    unlist(lapply(checkedFonts,
                   function(font) {
                       which <- ft$FamilyName == font
                       as.character(ft$filename[which])
