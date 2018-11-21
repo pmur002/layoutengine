@@ -11,7 +11,7 @@ flowDoc <- function(html, width, height, fonts, device, engine, ...) {
     xml_add_child(head,
                   "style",
                   type="text/css",
-                  fontCSS(fonts, device),
+                  fontCSS(fonts, device, engine$cssTransform),
                   paste0('\nbody { font-family: "',
                          firstFont(fonts, device), '" }'))
     engine$layout(html, width, height, fonts, device)
