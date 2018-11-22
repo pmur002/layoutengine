@@ -31,7 +31,9 @@ export("htmlDocument",
        "htmlGrob")
 
 S3method("makeContent", "htmlgrob")
+S3method("makeContext", "htmlgrob")
 
+S3method("flow", "default")
 S3method("flow", "htmlDocument")
 S3method("flow", "htmlElement")
 

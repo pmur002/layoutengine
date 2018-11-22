@@ -12,48 +12,63 @@ htmlGrob.default <- function(html, ...) {
     htmlGrob(htmlElement(html), ...)
 }
 
+htmlViewport <- function(html, x, y, just) {
+    viewport(x, y, layoutWidth(html), layoutHeight(html),
+             default.units="in", just=just,
+             xscale=layoutXScale(html), yscale=layoutYScale(html))
+}
+
 ## Input that has already been through htmlElement() or htmlDocument(),
 ## but is not laid out
+makeContext.htmlgrob <- function(x) {
+    layout <- flow(x$html, x$width, x$height, x$fonts, x$device, x$engine)
+    x$vp <- htmlViewport(layout, x$x, x$y, x$just)
+    ## Preserve layout so we do not have to recalculate it in
+    ## makeContent() method
+    x$layout <- layout
+    x
+}
+
 makeContent.htmlgrob <- function(x) {
-    w <- convertWidth(x$width, "in", valueOnly=TRUE)
-    h <- convertHeight(x$height, "in", valueOnly=TRUE)
-    layout <- flow(x$html, w, h, x$fonts, x$device, x$engine)
-    ## Do the same thing as htmlGrob.flowedHTML
-    setChildren(x, layoutGrobs(layout))
+    setChildren(x, layoutGrobs(x$layout))
 }
 
 htmlGrob.htmlDocument <- function(html, 
-                                  x=0.5, y=0.5, width=1, height=1,
+                                  x=0.5, y=0.5,
+                                  width=NULL, height=NULL,
                                   default.units="npc",
                                   just="centre",
                                   fonts="sans",
                                   device=currentDevice(),
                                   engine=getOption("layoutEngine.backend"),
                                   gp=gpar(), name=NULL, ...) {
-    vp <- viewport(x, y, width, height, default.units, just)
-    if (!is.unit(width)) {
+    if (!is.null(width) && !is.unit(width)) {
         width <- unit(width, default.units)
     }
-    if (!is.unit(height)) {
+    if (!is.null(height) && !is.unit(height)) {
         height <- unit(height, default.units)
     }
     ## Just record all the info
     ## Flow when render (via makeContent method)
-    gTree(html=html,
+    gTree(html=html, x=x, y=y, just=just,
           width=width, height=height,
           fonts=fonts, device=device, engine=engine,
-          gp=gp, name=name, vp=vp, cl="htmlgrob")
+          gp=gp, name=name, cl="htmlgrob")
 }
 
-## Laid out HTML
+## Laid out HTML (already has a size)
 htmlGrob.flowedhtml <- function(html,
-                                x=0.5, y=0.5, width=1, height=1,
+                                x=0.5, y=0.5, 
                                 default.units="npc",
                                 just="centre",
                                 gp=gpar(), name=NULL, ...) {
+    if (!is.unit(x))
+        x <- unit(x, default.units)
+    if (!is.unit(y))
+        y <- unit(y, default.units)
     ## Grobs representing the laid out HTML
     ## Can build this as fixed gTree (layout has already happened so is fixed)
-    vp <- viewport(x, y, width, height, default.units, just)
+    vp <- htmlViewport(html, x, y, just)
     gTree(children=layoutGrobs(html),
           gp=gp, name=name, vp=vp, cl="flowedhtmlgrob")
 }

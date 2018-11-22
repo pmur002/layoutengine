@@ -27,14 +27,30 @@ stripLayout <- function(x) {
 ## CSS standard says 1px = 1/96in !?
 dpi <- 96
 
+layoutWidth <- function(x) {
+    (max(x$x + x$width) - min(x$x))/dpi
+}
+
+layoutHeight <- function(x) {
+    (max(x$y + x$height) - min(x$y))/dpi
+}
+
+layoutXScale <- function(x) {
+    range(x$x, x$x + x$width)
+}
+
+layoutYScale <- function(x) {
+    rev(range(x$y, x$y + x$height))
+}
+
 ## Generate grobs from laid out HTML
 boxGrob <- function(i, layout) {
     ## Y measure down from top in web browser
-    totalHeight <- convertHeight(unit(1, "npc"), "in", valueOnly=TRUE)
-    x <- layout[i, 2]/dpi
-    y <- totalHeight - layout[i, 3]/dpi
-    w <- layout[i, 4]/dpi
-    h <- -layout[i, 5]/dpi
+    totalHeight <- convertHeight(unit(1, "npc"), "native", valueOnly=TRUE)
+    x <- layout[i, 2]
+    y <- layout[i, 3]
+    w <- layout[i, 4]
+    h <- layout[i, 5]
     if (layout[i, 1] == "TEXT") {
         face <- 1
         if (layout[i, 8] == "true") {
@@ -47,18 +63,17 @@ boxGrob <- function(i, layout) {
                              gp=gpar(fontfamily=layout[i, 7], fontface=face,
                                      fontsize=layout[i, 10]))
         textGrob(layout[i, 6],
-                 unit(x, "in"),
-                 unit(y + h, "in") + grobDescent(fontgrob),
+                 unit(x, "native"),
+                 unit(y + h, "native") + grobDescent(fontgrob),
                  just=c("left", "bottom"),
                  gp=gpar(fontfamily=layout[i, 7], fontface=face,
                          fontsize=layout[i, 10]))
     } else {
-        rectGrob(x, y, w, h, default.units="in", just=c("left", "bottom"),
+        rectGrob(x, y, w, h, default.units="native", just=c("left", "bottom"),
                  gp=gpar(lwd=.1, fill=NA))
     }
 }
 
-## Engine may specify its own grob function
 layoutGrobs <- function(x) {
     do.call("gList", lapply(1:nrow(x), boxGrob, x))
 }

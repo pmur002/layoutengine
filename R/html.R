@@ -35,16 +35,17 @@ htmlElement.character <- function(x, ...) {
     doc
 }
 
-## An 'xtable' table
-htmlElement.xtable <- function(x, ...) {
-    htmlElement(print(x, "html", print.results=FALSE), ...)
-}
-
 ## Valid XML, just check ok HTML
-htmlElement.xml_node <- function(x, fonts="sans", ...) {
+htmlElement.xml_node <- function(x, ...) {
     doc <- read_html(tags$html(tags$body(HTML(as.character(x)))))
     class(doc) <- c("htmlElement", "htmlDocument", class(doc))
     doc
 }
 
+## Extensions for likely packages
+
+## An 'xtable' table
+htmlElement.xtable <- function(x, ...) {
+    htmlElement(print(x, "html", print.results=FALSE), ...)
+}
 
