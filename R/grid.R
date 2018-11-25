@@ -42,6 +42,10 @@ htmlGrob.htmlDocument <- function(html,
                                   device=currentDevice(),
                                   engine=getOption("layoutEngine.backend"),
                                   gp=gpar(), name=NULL, ...) {
+    if (!is.unit(x))
+        x <- unit(x, default.units)
+    if (!is.unit(y))
+        y <- unit(y, default.units)
     if (!is.null(width) && !is.unit(width)) {
         width <- unit(width, default.units)
     }

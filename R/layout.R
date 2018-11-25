@@ -4,16 +4,24 @@
 ## ... PLUS interface for accessing info
 ## (so that we can make it more complex without changing any other code)
 
-makeLayout <- function(element,
-                       x, y, width, height,
-                       text, font, bold, italic, size) {
-    l <- data.frame(element,
-                    x, y, width, height,
-                    text, font, bold, italic, size,
-                    stringsAsFactors=FALSE)
+layoutFields <- alist(element=,
+                      x=, y=, width=, height=,
+                      text=, font=, bold=, italic=, size=,
+                      ## A boolean saying whether anything needs to be drawn
+                      ## If backend cannot provide this, return NA
+                      affectsDisplay=,
+                      borderLeftWidth=, borderTopWidth=,
+                      borderRightWidth=, borderBottomWidth=)
+
+makeLayout <- function() {}
+formals(makeLayout) <- layoutFields
+body(makeLayout) <- quote({
+    call <- match.call()
+    l <- do.call(data.frame, as.list(call)[-1])
+    names(l) <- names(call)[-1]
     class(l) <- c("flowedhtml", class(l))
     l
-}
+})
 
 length.flowedhtml <- function(x) {
     nrow(x)
@@ -53,10 +61,10 @@ boxGrob <- function(i, layout) {
     h <- layout[i, 5]
     if (layout[i, 1] == "TEXT") {
         face <- 1
-        if (layout[i, 8] == "true") {
+        if (layout[i, 8]) {
             face <- face + 1
         }
-        if (layout[i, 9] == "true") {
+        if (layout[i, 9]) {
             face <- face + 2
         }
         fontgrob <- textGrob(paste(c(letters, LETTERS), collapse=""),
@@ -68,9 +76,37 @@ boxGrob <- function(i, layout) {
                  just=c("left", "bottom"),
                  gp=gpar(fontfamily=layout[i, 7], fontface=face,
                          fontsize=layout[i, 10]))
-    } else {
-        rectGrob(x, y, w, h, default.units="native", just=c("left", "bottom"),
-                 gp=gpar(lwd=.1, fill=NA))
+    } else if (is.na(layout$affectsDisplay[i]) ||
+               layout$affectsDisplay[i]){
+        ## An element of some sort
+        ## Will almost certainly be more than one grob
+        grobs <- vector("list", length(layoutFields))
+        names(grobs) <- names(layoutFields)
+        ## Border
+        if (!is.na(layout$borderLeftWidth[i])) {
+            grobs$borderLeftWidth <- 
+                segmentsGrob(x, y, x, y + h, default.units="native",
+                             gp=gpar(lwd=layout$borderLeftWidth[i]))
+        } 
+        if (!is.na(layout$borderTopWidth[i])) {
+            grobs$borderTopWidth <- 
+                segmentsGrob(x, y + h, x + w, y + h, default.units="native",
+                             gp=gpar(lwd=layout$borderTopWidth[i]))
+        } 
+        if (!is.na(layout$borderRightWidth[i])) {
+            grobs$borderRightWidth <- 
+                segmentsGrob(x + w, y, x + w, y + h, default.units="native",
+                             gp=gpar(lwd=layout$borderRightWidth[i]))
+        } 
+        if (!is.na(layout$borderBottomWidth[i])) {
+            grobs$borderBottomWidth <- 
+                segmentsGrob(x, y, x + w, y, default.units="native",
+                             gp=gpar(lwd=layout$borderBottomWidth[i]))
+        }
+        ## Faint bbox outline
+        ## rectGrob(x, y, w, h, default.units="native",
+        ##          just=c("left", "bottom"), gp=gpar(lwd=.1, fill=NA))
+        gTree(children=do.call(gList, grobs[!sapply(grobs, is.null)]))
     }
 }
 
