@@ -30,7 +30,7 @@ length.flowedhtml <- function(x) {
 
 stripLayout <- function(x) {
     ## Remove the <html> and <body> info
-    x[!grepl("^(html|body)$", x$name, ignore.case=TRUE), ]
+    x[!grepl("^(html|body)$", x$type, ignore.case=TRUE), ]
 }
 
 ## CSS standard says 1px = 1/96in !?
