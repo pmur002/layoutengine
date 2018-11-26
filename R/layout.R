@@ -83,22 +83,26 @@ boxGrob <- function(i, layout) {
         grobs <- vector("list", length(layoutFields))
         names(grobs) <- names(layoutFields)
         ## Border
-        if (!is.na(layout$borderLeftWidth[i])) {
+        if (!is.na(layout$borderLeftWidth[i]) &&
+            layout$borderLeftWidth[i] > 0) {
             grobs$borderLeftWidth <- 
                 segmentsGrob(x, y, x, y + h, default.units="native",
                              gp=gpar(lwd=layout$borderLeftWidth[i]))
         } 
-        if (!is.na(layout$borderTopWidth[i])) {
+        if (!is.na(layout$borderTopWidth[i]) &&
+            layout$borderTopWidth[i] > 0) {
             grobs$borderTopWidth <- 
                 segmentsGrob(x, y + h, x + w, y + h, default.units="native",
                              gp=gpar(lwd=layout$borderTopWidth[i]))
         } 
-        if (!is.na(layout$borderRightWidth[i])) {
+        if (!is.na(layout$borderRightWidth[i]) &&
+            layout$borderRightWidth[i] > 0) {
             grobs$borderRightWidth <- 
                 segmentsGrob(x + w, y, x + w, y + h, default.units="native",
                              gp=gpar(lwd=layout$borderRightWidth[i]))
         } 
-        if (!is.na(layout$borderBottomWidth[i])) {
+        if (!is.na(layout$borderBottomWidth[i]) &&
+            layout$borderBottomWidth[i] > 0) {
             grobs$borderBottomWidth <- 
                 segmentsGrob(x, y, x + w, y, default.units="native",
                              gp=gpar(lwd=layout$borderBottomWidth[i]))
