@@ -6,12 +6,14 @@
 
 layoutFields <- alist(type=, name=, 
                       x=, y=, width=, height=,
-                      text=, family=, bold=, italic=, size=,
-                      ## A boolean saying whether anything needs to be drawn
-                      ## If backend cannot provide this, return NA
-                      affectsDisplay=,
+                      text=, family=, bold=, italic=, size=, color=,
+                      backgroundColor=,
                       borderLeftWidth=, borderTopWidth=,
-                      borderRightWidth=, borderBottomWidth=)
+                      borderRightWidth=, borderBottomWidth=,
+                      borderLeftStyle=, borderTopStyle=,
+                      borderRightStyle=, borderBottomStyle=,
+                      borderLeftColor=, borderTopColor=,
+                      borderRightColor=, borderBottomColor=)
 
 makeLayout <- function() {}
 formals(makeLayout) <- layoutFields
@@ -52,6 +54,60 @@ layoutYScale <- function(x) {
     rev(range(x$y, x$y + x$height))
 }
 
+col <- function(x) {
+    if (is.na(x) || nchar(x) == 0) {
+        "black"
+    } else {
+        x
+    }
+}
+
+## Default col is "black"
+transparentCol <- function(x) {
+    !(is.na(x) || nchar(x) == 0) &&
+        (x == "transparent" || col2rgb(x, alpha=TRUE)[4] == 0)
+}
+
+## Default fill is "transparent"
+transparentFill <- function(x) {
+    is.na(x) ||
+        nchar(x) == 0 ||
+        x == "transparent" ||
+        col2rgb(x, alpha=TRUE)[4] == 0
+}
+
+## Default border style is "solid" ?
+lty <- function(x) {
+    
+    if (is.na(x))
+        return("solid")
+
+    lty <- switch(x,
+                  ## Supported
+                  none=,
+                  hidden=,
+                  dotted=,
+                  dashed=,
+                  solid=x,
+                  ## Unsupported
+                  double=,
+                  groove=,
+                  ridge=,
+                  inset=,
+                  outset="solid")
+    if (lty != x)
+        warning('Unsupported border style converted to "solid"')
+    lty
+}
+
+drawBorder <- function(border, i, layout) {
+    !is.na(layout[[paste0("border", border, "Width")]][i]) &&
+        (layout[[paste0("border", border, "Width")]][i] > 0) &&
+        (!layout[[paste0("border", border, "Style")]][i] %in%
+         c("none", "hidden")) &&
+        !transparentCol(layout[[paste0("border", border, "Color")]][i])    
+}
+
 boxGrob <- function(i, layout) {
     ## Y measure down from top in web browser
     totalHeight <- convertHeight(unit(1, "npc"), "native", valueOnly=TRUE)
@@ -70,46 +126,59 @@ boxGrob <- function(i, layout) {
         fontgrob <- textGrob(paste(c(letters, LETTERS), collapse=""),
                              gp=gpar(fontfamily=layout$family[i], fontface=face,
                                      fontsize=layout$size[i]))
-        textGrob(layout$text[i],
+        ## Remove leading or trailing white space
+        textGrob(gsub("^ +| +$", "", layout$text[i]),
                  unit(x, "native"),
                  unit(y + h, "native") + grobDescent(fontgrob),
                  just=c("left", "bottom"),
                  gp=gpar(fontfamily=layout$family[i], fontface=face,
-                         fontsize=layout$size[i]),
+                         fontsize=layout$size[i],
+                         col=col(layout$color[i])),
                  name=layout$name[i])
-    } else if (is.na(layout$affectsDisplay[i]) ||
-               layout$affectsDisplay[i]){
+    } else {
         ## An element of some sort
         ## Will almost certainly be more than one grob
         grobs <- vector("list", length(layoutFields))
         names(grobs) <- names(layoutFields)
+        ## Background
+        if (!transparentFill(layout$backgroundColor[i])) {
+            grobs$backgroundColor <-
+                rectGrob(x, y, w, h, default.units="native",
+                         just=c("left", "bottom"),
+                         gp=gpar(col=NA, fill=col(layout$backgroundColor[i])),
+                         name="background")
+        }
         ## Border
-        if (!is.na(layout$borderLeftWidth[i]) &&
-            layout$borderLeftWidth[i] > 0) {
+        if (drawBorder("Left", i, layout)) {
             grobs$borderLeftWidth <- 
                 segmentsGrob(x, y, x, y + h, default.units="native",
-                             gp=gpar(lwd=layout$borderLeftWidth[i]),
+                             gp=gpar(lwd=layout$borderLeftWidth[i],
+                                     col=col(layout$borderLeftColor[i]),
+                                     lty=lty(layout$borderLeftStyle[i])),
                              name="border.left")
         } 
-        if (!is.na(layout$borderTopWidth[i]) &&
-            layout$borderTopWidth[i] > 0) {
+        if (drawBorder("Top", i, layout)) {
             grobs$borderTopWidth <- 
                 segmentsGrob(x, y + h, x + w, y + h, default.units="native",
-                             gp=gpar(lwd=layout$borderTopWidth[i]),
+                             gp=gpar(lwd=layout$borderTopWidth[i],
+                                     col=col(layout$borderTopColor[i]),
+                                     lty=lty(layout$borderTopStyle[i])),
                              name="border.top")
         } 
-        if (!is.na(layout$borderRightWidth[i]) &&
-            layout$borderRightWidth[i] > 0) {
+        if (drawBorder("Right", i, layout)) {
             grobs$borderRightWidth <- 
                 segmentsGrob(x + w, y, x + w, y + h, default.units="native",
-                             gp=gpar(lwd=layout$borderRightWidth[i]),
+                             gp=gpar(lwd=layout$borderRightWidth[i],
+                                     col=col(layout$borderRightColor[i]),
+                                     lty=lty(layout$borderRightStyle[i])),
                              name="border.right")
         } 
-        if (!is.na(layout$borderBottomWidth[i]) &&
-            layout$borderBottomWidth[i] > 0) {
+        if (drawBorder("Bottom", i, layout)) {
             grobs$borderBottomWidth <- 
                 segmentsGrob(x, y, x + w, y, default.units="native",
-                             gp=gpar(lwd=layout$borderBottomWidth[i]),
+                             gp=gpar(lwd=layout$borderBottomWidth[i],
+                                     col=col(layout$borderBottomColor[i]),
+                                     lty=lty(layout$borderBottomStyle[i])),
                              name="border.bottom")
         }
         gTree(children=do.call(gList, grobs[!sapply(grobs, is.null)]),
