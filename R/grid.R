@@ -8,8 +8,8 @@ htmlGrob <- function(html, ...) {
 
 ## Assume that input is some expression of an HTML element
 ## and pass to HTMLElement() can handle
-htmlGrob.default <- function(html, ...) {
-    htmlGrob(htmlElement(html), ...)
+htmlGrob.default <- function(html, assets=NULL, ...) {
+    htmlGrob(htmlElement(html, assets), ...)
 }
 
 htmlViewport <- function(html, x, y, just) {

@@ -48,7 +48,7 @@ cssFontFace <- function(name, style, weight, file) {
            paste0('  font-family: "', name, '";'),
            paste0("  font-style: ", style, ";"),
            paste0("  font-weight: ", weight, ";"),
-           paste0("  src: url('", basename(file), "');"),
+           paste0("  src: url('assets/", basename(file), "');"),
            "}",
            sep="\n")
 }

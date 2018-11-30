@@ -7,15 +7,17 @@ htmlDocument <- function(x, ...) {
 }
 
 ## Assume character value is HTML
-htmlDocument.character <- function(x, ...) {
-    doc <- read_html(x)
+htmlDocument.character <- function(x, assets=NULL, ...) {
+    doc <- read_html(paste(x, collapse=""))
+    attr(doc, "assets") <- assets
     class(doc) <- c("htmlDocument", class(doc))
     doc
 }
 
 ## If already an xml2::xml_document, just check it is HTML
-htmlDocument.xml_document <- function(x, ...) {
+htmlDocument.xml_document <- function(x, assets=NULL, ...) {
     doc <- read_html(as.character(x))
+    attr(doc, "assets") <- assets
     class(doc) <- c("htmlDocument", class(doc))
     doc
 }
@@ -28,16 +30,18 @@ htmlElement <- function(x, ...) {
 }
 
 ## Assume character value is HTML element
-htmlElement.character <- function(x, ...) {
+htmlElement.character <- function(x, assets=NULL, ...) {
     ## Will auto-complete HTML doc (with element as only content within body)
-    doc <- read_html(x)
+    doc <- read_html(paste(x, collapse=""))
+    attr(doc, "assets") <- assets
     class(doc) <- c("htmlElement", "htmlDocument", class(doc))
     doc
 }
 
 ## Valid XML, just check ok HTML
-htmlElement.xml_node <- function(x, ...) {
+htmlElement.xml_node <- function(x, assets=NULL, ...) {
     doc <- read_html(tags$html(tags$body(HTML(as.character(x)))))
+    attr(doc, "assets") <- assets
     class(doc) <- c("htmlElement", "htmlDocument", class(doc))
     doc
 }

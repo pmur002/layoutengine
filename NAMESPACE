@@ -21,11 +21,13 @@ importFrom("extrafont",
 export("htmlDocument",
        "htmlElement",
 
+       "copyAssets",
+       "fontFiles",
+       "layoutFields",
        "makeLayout",
        "makeEngine",
-       
+
        "flow",
-       "fontFiles",
        
        "grid.html",
        "htmlGrob")
