@@ -6,5 +6,6 @@
 
     ## Initialise package options
     ## (backend packages will override this)
-    options("layoutEngine.backend"=nullEngine)
+    options("layoutEngine.backend"=nullEngine,
+            "layoutEngine.debug"=FALSE)
 }

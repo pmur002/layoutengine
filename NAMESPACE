@@ -18,17 +18,22 @@ importFrom("gdtools",
 importFrom("extrafont",
            "fonttable")
 
-export("htmlDocument",
+export(## Specifying HTML/CSS
+       "cssFontFamily",
+       "htmlDocument",
        "htmlElement",
 
+       ## Defining backends
        "copyAssets",
        "fontFiles",
        "layoutFields",
        "makeLayout",
        "makeEngine",
 
+       ## Calculate layout
        "flow",
-       
+
+       ## Render HTML/CSS in R
        "grid.html",
        "htmlGrob")
 

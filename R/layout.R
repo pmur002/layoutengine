@@ -6,7 +6,7 @@
 
 layoutFields <- alist(type=, name=, 
                       x=, y=, width=, height=,
-                      text=, family=, bold=, italic=, size=, color=,
+                      baseline=, text=, family=, bold=, italic=, size=, color=,
                       backgroundColor=,
                       borderLeftWidth=, borderTopWidth=,
                       borderRightWidth=, borderBottomWidth=,
@@ -110,7 +110,6 @@ drawBorder <- function(border, i, layout) {
 
 boxGrob <- function(i, layout) {
     ## Y measure down from top in web browser
-    totalHeight <- convertHeight(unit(1, "npc"), "native", valueOnly=TRUE)
     x <- layout$x[i]
     y <- layout$y[i]
     w <- layout$width[i]
@@ -127,14 +126,22 @@ boxGrob <- function(i, layout) {
                              gp=gpar(fontfamily=layout$family[i], fontface=face,
                                      fontsize=layout$size[i]))
         ## Remove leading or trailing white space
-        textGrob(gsub("^ +| +$", "", layout$text[i]),
-                 unit(x, "native"),
-                 unit(y + h, "native") + grobDescent(fontgrob),
-                 just=c("left", "bottom"),
-                 gp=gpar(fontfamily=layout$family[i], fontface=face,
-                         fontsize=layout$size[i],
-                         col=col(layout$color[i])),
-                 name=layout$name[i])
+        tg <- textGrob(gsub("^ +| +$", "", layout$text[i]),
+                       unit(x, "native"),
+                       unit(y + h - layout$baseline[i], "native"),
+                       just=c("left", "bottom"),
+                       gp=gpar(fontfamily=layout$family[i], fontface=face,
+                               fontsize=layout$size[i],
+                               col=col(layout$color[i])),
+                       name=layout$name[i])
+        if (getOption("layoutEngine.debug")) {
+            gTree(children=gList(rectGrob(x, y, w, h, default.units="native",
+                                          just=c("left", "bottom"),
+                                          gp=gpar(lwd=.1)),
+                                 tg))
+        } else {
+            tg
+        }
     } else {
         ## An element of some sort
         ## Will almost certainly be more than one grob

@@ -44,13 +44,13 @@ mapFCfontWeight <- function(weight) {
 }
 
 cssFontFace <- function(name, style, weight, file) {
-     paste("@font-face {",
-           paste0('  font-family: "', name, '";'),
-           paste0("  font-style: ", style, ";"),
-           paste0("  font-weight: ", weight, ";"),
-           paste0("  src: url('assets/", basename(file), "');"),
-           "}",
-           sep="\n")
+    paste("@font-face {",
+          paste0('  font-family: "', name, '";'),
+          paste0("  font-style: ", style, ";"),
+          paste0("  font-weight: ", weight, ";"),
+          paste0("  src: url('assets/", basename(file), "');"),
+          "}",
+          sep="\n")
 }
 
 ## Turn generic font families into specific fonts
@@ -85,10 +85,14 @@ cairoFontCSS <- function(fonts, cssTransform) {
                              if (!is.null(cssTransform$fontWeight)) 
                                  fontWeight <-
                                      cssTransform$fontWeight(fontWeight)
+                             fontFile <- as.character(sf$file[which])
+                             if (!is.null(cssTransform$fontFile))
+                                 fontFile <-
+                                     cssTransform$fontFile(fontFile)
                              cssFontFace(as.character(sf$family[which]),
                                          fontStyle(sf$slant[which] > 0),
                                          fontWeight,
-                                         as.character(sf$file[which]))
+                                         fontFile)
                          }))
     paste(css, collapse="\n")
 }
@@ -99,10 +103,12 @@ checkMissingType1Fonts <- function(fonts, fontTable) {
         for (i in which(missing)) {
             ## Try font names with white space removed
             trimmedFont <- gsub(" ", "", fonts[i])
-            if (trimmedFont %in% fontTable$FamilyName)
+            if (trimmedFont %in% fontTable$FamilyName) {
                 fonts[i] <- trimmedFont
-            else
+                missing[i] <- FALSE
+            } else {
                 stop(paste0("Font(s) not available: ", fonts[missing]))
+            }
         }
     }
     fonts
@@ -111,35 +117,37 @@ checkMissingType1Fonts <- function(fonts, fontTable) {
 
 ## Look up font in extrafont::fonttable and
 ## register each font face
-Type1FontCSS <- function(fonts) {
+Type1FontCSS <- function(fonts, cssTransform) {
     ft <- get("fontTable", envir=layoutEngineEnv)
     mappedFonts <- mapGenericFonts(fonts)
     checkedFonts <- checkMissingType1Fonts(mappedFonts, ft)
     css <- unlist(lapply(checkedFonts,
                          function(font) {
                              which <- ft$FamilyName == font
+                             fontFile <- as.character(ft$fontfile[which])
+                             if (!is.null(cssTransform$fontFile))
+                                 fontFile <-
+                                     cssTransform$fontFile(fontFile)
                              cssFontFace(as.character(ft$FamilyName[which]),
                                          fontStyle(ft$Italic[which]),
                                          fontWeight(ft$Bold[which]),
-                                         as.character(ft$fontfile[which]))
+                                         fontFile)
                          }))
     paste(css, collapse="\n")
 }
 
-postscriptFontCSS <- function(fonts) {
-    Type1FontCSS(fonts)
-}
-
-pdfFontCSS <- function(fonts) {
-    Type1FontCSS(fonts)
+pdfFontCSS <- function(fonts, cssTransform) {
+    Type1FontCSS(fonts, cssTransform)
 }    
+
+postscriptFontCSS <- pdfFontCSS
 
 ## Generate CSS @font-face rules based on 'fonts'
 fontCSS <- function(fonts, device, cssTransform) {
     if (device == "postscript") {
-        postscriptFontCSS(fonts)
+        postscriptFontCSS(fonts, cssTransform)
     } else if (device == "pdf") {
-        pdfFontCSS(fonts)
+        pdfFontCSS(fonts, cssTransform)
     } else if (cairoDevice(device)) {
         cairoFontCSS(fonts, cssTransform)
     } else {
@@ -200,6 +208,29 @@ fontFiles <- function(fonts, device) {
         Type1FontFiles(fonts)
     } else if (cairoDevice(device)) {
         cairoFontFiles(fonts)
+    } else {
+        stop(paste0("Device ", device, " unsupported"))
+    }
+}
+
+Type1FontFamily <- function(fonts) {
+    ft <- get("fontTable", envir=layoutEngineEnv)
+    mappedFonts <- mapGenericFonts(fonts)
+    checkMissingType1Fonts(mappedFonts, ft)
+}
+
+cairoFontFamily <- function(fonts) {
+    sf <- get("sysFonts", envir=layoutEngineEnv)
+    fonts <- mapGenericFonts(fonts)
+    checkMissingCairoFonts(fonts)
+    fonts
+}
+
+cssFontFamily <- function(fonts, device=currentDevice()) {
+    if (device %in% c("postscript", "pdf")) {
+        Type1FontFamily(fonts)
+    } else if (cairoDevice(device)) {
+        cairoFontFamily(fonts)
     } else {
         stop(paste0("Device ", device, " unsupported"))
     }
