@@ -122,9 +122,6 @@ boxGrob <- function(i, layout) {
         if (layout$italic[i]) {
             face <- face + 2
         }
-        fontgrob <- textGrob(paste(c(letters, LETTERS), collapse=""),
-                             gp=gpar(fontfamily=layout$family[i], fontface=face,
-                                     fontsize=layout$size[i]))
         ## Remove leading or trailing white space
         tg <- textGrob(gsub("^ +| +$", "", layout$text[i]),
                        unit(x, "native"),

@@ -14,7 +14,7 @@ makeEngine <- function(layout, cssTransform=list()) {
 ## Just returns the HTML itself within the requested box size
 nullLayout <- function(html, width, height, fonts, device) {
     layoutArgs <- list("TEXT", "text.1", 0, 0, width*dpi, height*dpi,
-                       as.character(html), fonts[1], FALSE, FALSE, 10, "black",
+                       0, as.character(html), fonts[1], FALSE, FALSE, 10, "black",
                        "transparent",
                        NA, NA, NA, NA,
                        NA, NA, NA, NA,
