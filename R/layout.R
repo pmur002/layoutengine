@@ -116,7 +116,7 @@ drawBorder <- function(border, i, layout) {
 boxGrob <- function(i, layout, yrange) {
     ## Y measure down from top in web browser
     x <- layout$x[i]
-    y <- yrange[2] - (layout$height[i] + (layout$y[i] - yrange[1]))
+    y <- yrange[2] - (layout$height[i] + layout$y[i])
     w <- layout$width[i]
     h <- layout$height[i]
     if (grepl("^text", layout$type[i], ignore.case=TRUE)) {
@@ -207,7 +207,7 @@ layoutGrobs <- function(x) {
 boxViewport <- function(i, layout, yrange) {
     ## Y measure down from top in web browser
     x <- layout$x[i]
-    y <- yrange[2] - (layout$height[i] + (layout$y[i] - yrange[1]))
+    y <- yrange[2] - (layout$height[i] + layout$y[i])
     w <- layout$width[i]
     h <- layout$height[i]
     if (grepl("^text", layout$type[i], ignore.case=TRUE)) {
