@@ -23,6 +23,9 @@ htmlViewport <- function(html, x, y, just) {
 makeContext.htmlgrob <- function(x) {
     layout <- flow(x$html, x$width, x$height, x$fonts, x$device, x$engine)
     x$vp <- htmlViewport(layout, x$x, x$y, x$just)
+    if (x$viewports) {
+        x$childrenvp <- layoutViewports(layout)
+    }
     ## Preserve layout so we do not have to recalculate it in
     ## makeContent() method
     x$layout <- layout
@@ -41,6 +44,7 @@ htmlGrob.htmlDocument <- function(html,
                                   fonts="sans",
                                   device=currentDevice(),
                                   engine=getOption("layoutEngine.backend"),
+                                  viewports=FALSE,
                                   gp=gpar(), name=NULL, ...) {
     if (!is.unit(x))
         x <- unit(x, default.units)
@@ -57,6 +61,7 @@ htmlGrob.htmlDocument <- function(html,
     gTree(html=html, x=x, y=y, just=just,
           width=width, height=height,
           fonts=fonts, device=device, engine=engine,
+          viewports=viewports,
           gp=gp, name=name, cl="htmlgrob")
 }
 
@@ -65,6 +70,7 @@ htmlGrob.flowedhtml <- function(html,
                                 x=0.5, y=0.5, 
                                 default.units="npc",
                                 just="centre",
+                                viewports=FALSE,
                                 gp=gpar(), name=NULL, ...) {
     if (!is.unit(x))
         x <- unit(x, default.units)
@@ -73,7 +79,13 @@ htmlGrob.flowedhtml <- function(html,
     ## Grobs representing the laid out HTML
     ## Can build this as fixed gTree (layout has already happened so is fixed)
     vp <- htmlViewport(html, x, y, just)
+    if (viewports) {
+        childrenvp <- layoutViewports(html)
+    } else {
+        childrenvp <- NULL
+    }
     gTree(children=layoutGrobs(html),
+          childrenvp=childrenvp,
           gp=gp, name=name, vp=vp, cl="flowedhtmlgrob")
 }
     

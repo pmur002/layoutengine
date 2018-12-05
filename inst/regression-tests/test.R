@@ -106,6 +106,14 @@ grid.html("<p></p>",
                             borderLeftWidth=1, borderTopWidth=1,
                             borderRightWidth=1, borderBottomWidth=1,
                             borderTopStyle="hidden"))
+grid.newpage()
+grid.html("<p></p>",
+          engine=testEngine(c("CELL", "TEXT"),
+                            "cell with\nviewport",
+                            width=1, height=1),
+          viewports=TRUE)
+downViewport("CELL.1.vp")
+grid.rect()
 dev.off()
 
 ## Check graphical output

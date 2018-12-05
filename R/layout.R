@@ -198,3 +198,30 @@ layoutGrobs <- function(x) {
     do.call("gList", lapply(1:nrow(x), boxGrob, x))
 }
 
+boxViewport <- function(i, layout) {
+    ## Y measure down from top in web browser
+    x <- layout$x[i]
+    y <- layout$y[i]
+    w <- layout$width[i]
+    h <- layout$height[i]
+    if (grepl("^text", layout$type[i], ignore.case=TRUE)) {
+        ## No viewports from text nodes
+        NULL
+    } else {
+        ## An element of some sort
+        viewport(x, y, w, h, default.units="native",
+                 just=c("left", "bottom"),
+                 name=paste0(layout$name[i], ".vp"))
+    }
+}
+
+layoutViewports <- function(x) {
+    viewports <- lapply(1:nrow(x), boxViewport, x)
+    vplist <- viewports[!sapply(viewports, is.null)]
+    if (length(vplist)) {
+        do.call("vpList", vplist)
+    } else {
+        NULL
+    }
+}
+
