@@ -50,8 +50,13 @@ layoutXScale <- function(x) {
     range(x$x, x$x + x$width)
 }
 
+## Y measure down from top in web browser
+layoutYrange <- function(x) {
+    c(min(x$y), max(x$y + x$height))
+}
+
 layoutYScale <- function(x) {
-    rev(range(x$y, x$y + x$height))
+    c(0, diff(layoutYrange(x)))
 }
 
 col <- function(x) {
@@ -108,10 +113,10 @@ drawBorder <- function(border, i, layout) {
         !transparentCol(layout[[paste0("border", border, "Color")]][i])    
 }
 
-boxGrob <- function(i, layout) {
+boxGrob <- function(i, layout, yrange) {
     ## Y measure down from top in web browser
     x <- layout$x[i]
-    y <- layout$y[i]
+    y <- yrange[2] - (layout$height[i] + (layout$y[i] - yrange[1]))
     w <- layout$width[i]
     h <- layout$height[i]
     if (grepl("^text", layout$type[i], ignore.case=TRUE)) {
@@ -125,7 +130,7 @@ boxGrob <- function(i, layout) {
         ## Remove leading or trailing white space
         tg <- textGrob(gsub("^ +| +$", "", layout$text[i]),
                        unit(x, "native"),
-                       unit(y + h - layout$baseline[i], "native"),
+                       unit(y + layout$baseline[i], "native"),
                        just=c("left", "bottom"),
                        gp=gpar(fontfamily=layout$family[i], fontface=face,
                                fontsize=layout$size[i],
@@ -195,13 +200,14 @@ boxGrob <- function(i, layout) {
 }
 
 layoutGrobs <- function(x) {
-    do.call("gList", lapply(1:nrow(x), boxGrob, x))
+    yrange <- layoutYrange(x)
+    do.call("gList", lapply(1:nrow(x), boxGrob, x, yrange))
 }
 
-boxViewport <- function(i, layout) {
+boxViewport <- function(i, layout, yrange) {
     ## Y measure down from top in web browser
     x <- layout$x[i]
-    y <- layout$y[i]
+    y <- yrange[2] - (layout$height[i] + (layout$y[i] - yrange[1]))
     w <- layout$width[i]
     h <- layout$height[i]
     if (grepl("^text", layout$type[i], ignore.case=TRUE)) {
@@ -216,7 +222,8 @@ boxViewport <- function(i, layout) {
 }
 
 layoutViewports <- function(x) {
-    viewports <- lapply(1:nrow(x), boxViewport, x)
+    yrange <- layoutYrange(x)
+    viewports <- lapply(1:nrow(x), boxViewport, x, yrange)
     vplist <- viewports[!sapply(viewports, is.null)]
     if (length(vplist)) {
         do.call("vpList", vplist)
