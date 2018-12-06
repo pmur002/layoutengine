@@ -8,7 +8,7 @@ htmlGrob <- function(html, ...) {
 
 ## Assume that input is some expression of an HTML element
 ## and pass to HTMLElement() can handle
-htmlGrob.default <- function(html, assets=NULL, ...) {
+htmlGrob.default <- function(html, ..., assets=NULL) {
     htmlGrob(htmlElement(html, assets), ...)
 }
 
@@ -21,7 +21,8 @@ htmlViewport <- function(html, x, y, just) {
 ## Input that has already been through htmlElement() or htmlDocument(),
 ## but is not laid out
 makeContext.htmlgrob <- function(x) {
-    layout <- flow(x$html, x$width, x$height, x$fonts, x$device, x$engine)
+    layout <- flow(x$html, x$css,
+                   x$width, x$height, x$fonts, x$device, x$engine)
     x$vp <- htmlViewport(layout, x$x, x$y, x$just)
     if (x$viewports) {
         x$childrenvp <- layoutViewports(layout)
@@ -36,7 +37,7 @@ makeContent.htmlgrob <- function(x) {
     setChildren(x, layoutGrobs(x$layout))
 }
 
-htmlGrob.htmlDocument <- function(html, 
+htmlGrob.htmlDocument <- function(html, css="",
                                   x=0.5, y=0.5,
                                   width=NULL, height=NULL,
                                   default.units="npc",
@@ -58,7 +59,7 @@ htmlGrob.htmlDocument <- function(html,
     }
     ## Just record all the info
     ## Flow when render (via makeContent method)
-    gTree(html=html, x=x, y=y, just=just,
+    gTree(html=html, css=css, x=x, y=y, just=just,
           width=width, height=height,
           fonts=fonts, device=device, engine=engine,
           viewports=viewports,
@@ -66,7 +67,7 @@ htmlGrob.htmlDocument <- function(html,
 }
 
 ## Laid out HTML (already has a size)
-htmlGrob.flowedhtml <- function(html,
+htmlGrob.flowedhtml <- function(html, css="",
                                 x=0.5, y=0.5, 
                                 default.units="npc",
                                 just="centre",
