@@ -37,8 +37,12 @@ export(## Specifying HTML/CSS
        "grid.html",
        "htmlGrob")
 
+S3method("heightDetails", "htmlgrob")
+S3method("heightDetails", "flowedhtmlgrob")
 S3method("makeContent", "htmlgrob")
 S3method("makeContext", "htmlgrob")
+S3method("widthDetails", "htmlgrob")
+S3method("widthDetails", "flowedhtmlgrob")
 
 S3method("flow", "default")
 S3method("flow", "htmlDocument")
@@ -54,3 +58,4 @@ S3method("htmlElement", "xtable")
 S3method("htmlGrob", "default")
 S3method("htmlGrob", "flowedhtml")
 S3method("htmlGrob", "htmlDocument")
+

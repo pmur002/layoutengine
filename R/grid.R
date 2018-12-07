@@ -20,6 +20,17 @@ htmlViewport <- function(html, x, y, just) {
 
 ## Input that has already been through htmlElement() or htmlDocument(),
 ## but is not laid out
+widthDetails.htmlgrob <- function(x) {
+    layout <- flow(x$html, x$css,
+                   x$width, x$height, x$fonts, x$device, x$engine)
+    unit(layoutWidth(layout), "in")
+}
+heightDetails.htmlgrob <- function(x) {
+    layout <- flow(x$html, x$css,
+                   x$width, x$height, x$fonts, x$device, x$engine)
+    unit(layoutHeight(layout), "in")
+}
+
 makeContext.htmlgrob <- function(x) {
     layout <- flow(x$html, x$css,
                    x$width, x$height, x$fonts, x$device, x$engine)
@@ -67,6 +78,14 @@ htmlGrob.htmlDocument <- function(html, css="",
 }
 
 ## Laid out HTML (already has a size)
+widthDetails.flowedhtmlgrob <- function(x) {
+    unit(layoutWidth(x$layout), "in")
+}
+
+heightDetails.flowedhtmlgrob <- function(x) {
+    unit(layoutHeight(x$layout), "in")
+}
+
 htmlGrob.flowedhtml <- function(html, css="",
                                 x=0.5, y=0.5, 
                                 default.units="npc",
@@ -85,7 +104,8 @@ htmlGrob.flowedhtml <- function(html, css="",
     } else {
         childrenvp <- NULL
     }
-    gTree(children=layoutGrobs(html),
+    gTree(layout=html,
+          children=layoutGrobs(html),
           childrenvp=childrenvp,
           gp=gp, name=name, vp=vp, cl="flowedhtmlgrob")
 }
