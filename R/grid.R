@@ -8,8 +8,8 @@ htmlGrob <- function(html, ...) {
 
 ## Assume that input is some expression of an HTML element
 ## and pass to HTMLElement() can handle
-htmlGrob.default <- function(html, ..., assets=NULL) {
-    htmlGrob(htmlElement(html, assets), ...)
+htmlGrob.default <- function(html, ..., css="", assets=NULL) {
+    htmlGrob(htmlElement(html, css, assets), ...)
 }
 
 htmlViewport <- function(html, x, y, just) {
@@ -21,18 +21,18 @@ htmlViewport <- function(html, x, y, just) {
 ## Input that has already been through htmlElement() or htmlDocument(),
 ## but is not laid out
 widthDetails.htmlgrob <- function(x) {
-    layout <- flow(x$html, x$css,
+    layout <- flow(x$html, 
                    x$width, x$height, x$fonts, x$device, x$engine)
     unit(layoutWidth(layout), "in")
 }
 heightDetails.htmlgrob <- function(x) {
-    layout <- flow(x$html, x$css,
+    layout <- flow(x$html, 
                    x$width, x$height, x$fonts, x$device, x$engine)
     unit(layoutHeight(layout), "in")
 }
 
 makeContext.htmlgrob <- function(x) {
-    layout <- flow(x$html, x$css,
+    layout <- flow(x$html, 
                    x$width, x$height, x$fonts, x$device, x$engine)
     x$vp <- htmlViewport(layout, x$x, x$y, x$just)
     if (x$viewports) {
@@ -48,7 +48,7 @@ makeContent.htmlgrob <- function(x) {
     setChildren(x, layoutGrobs(x$layout))
 }
 
-htmlGrob.htmlDocument <- function(html, css="",
+htmlGrob.htmlDocument <- function(html, 
                                   x=0.5, y=0.5,
                                   width=NULL, height=NULL,
                                   default.units="npc",
@@ -70,7 +70,7 @@ htmlGrob.htmlDocument <- function(html, css="",
     }
     ## Just record all the info
     ## Flow when render (via makeContent method)
-    gTree(html=html, css=css, x=x, y=y, just=just,
+    gTree(html=html, x=x, y=y, just=just,
           width=width, height=height,
           fonts=fonts, device=device, engine=engine,
           viewports=viewports,
@@ -86,7 +86,7 @@ heightDetails.flowedhtmlgrob <- function(x) {
     unit(layoutHeight(x$layout), "in")
 }
 
-htmlGrob.flowedhtml <- function(html, css="",
+htmlGrob.flowedhtml <- function(html, 
                                 x=0.5, y=0.5, 
                                 default.units="npc",
                                 just="centre",

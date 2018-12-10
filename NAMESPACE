@@ -53,7 +53,6 @@ S3method("htmlDocument", "xml_document")
 
 S3method("htmlElement", "character")
 S3method("htmlElement", "xml_node")
-S3method("htmlElement", "xtable")
 
 S3method("htmlGrob", "default")
 S3method("htmlGrob", "flowedhtml")

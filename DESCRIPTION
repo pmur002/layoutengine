@@ -8,5 +8,4 @@ Description: Functions to render HTML (and CSS) content within R.  Requires
              a "backend" package to do the actual layout of the HTML.
 Depends: grid
 Imports: htmltools, xml2, extrafont, gdtools
-Suggests: xtable
 License: GPL-3

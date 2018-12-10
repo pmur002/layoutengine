@@ -228,10 +228,12 @@ cairoFontFamily <- function(fonts) {
 
 cssFontFamily <- function(fonts, device=currentDevice()) {
     if (device %in% c("postscript", "pdf")) {
-        Type1FontFamily(fonts)
+        cssFonts <- Type1FontFamily(fonts)
     } else if (cairoDevice(device)) {
-        cairoFontFamily(fonts)
+        cssFonts <- cairoFontFamily(fonts)
     } else {
         stop(paste0("Device ", device, " unsupported"))
     }
+    names(cssFonts) <- fonts
+    cssFonts
 }
