@@ -1,7 +1,7 @@
 
 ## Interface for describing an HTML document to 'layoutEngine'
 
-buildDoc <- function(html, css) {
+buildDoc <- function(html, css="") {
     doc <- read_html(html)
     if (nchar(css) > 0) {
         ## add CSS to document (adding <head> if necessary)
@@ -22,21 +22,20 @@ htmlDocument <- function(x, ...) {
 }
 
 ## Assume character value is HTML
-htmlDocument.character <- function(x, css="",
+htmlDocument.character <- function(x, 
                                    assets=NULL,
                                    ...) {
-    doc <- buildDoc(paste(x, collapse=""), css)
+    doc <- buildDoc(paste(x, collapse=""))
     obj <- list(doc=doc, assets=assets)
     class(obj) <- c("htmlDocument")
     obj
 }
 
 ## If already an xml2::xml_document, just check it is HTML
-htmlDocument.xml_document <- function(x, css="",
+htmlDocument.xml_document <- function(x, 
                                       assets=NULL,
                                       ...) {
-    doc <- buildDoc(as.character(x),
-                    css, fonts, device, engine)
+    doc <- buildDoc(as.character(x))
     obj <- list(doc=doc, assets=assets)
     class(obj) <- c("htmlDocument")
     obj
@@ -64,7 +63,7 @@ htmlElement.character <- function(x, css="",
 htmlElement.xml_node <- function(x, css="",
                                  assets=NULL,
                                  ...) {
-    doc <- buildDoc(tags$html(tags$body(HTML(as.character(x)))), css)
+    doc <- buildDoc(as.character(x), css)
     obj <- list(doc=doc, assets=assets)
     class(obj) <- c("htmlElement", "htmlDocument")
     obj
