@@ -113,6 +113,10 @@ drawBorder <- function(border, i, layout) {
         !transparentCol(layout[[paste0("border", border, "Color")]][i])    
 }
 
+## Only take notice of specific elements
+supportedElements <- c("DIV", "P", "SPAN",
+                       "TABLE", "TBODY", "TR", "TH", "TD")
+                       
 boxGrob <- function(i, layout, yrange) {
     ## Y measure down from top in web browser
     x <- layout$x[i]
@@ -144,7 +148,7 @@ boxGrob <- function(i, layout, yrange) {
         } else {
             tg
         }
-    } else {
+    } else if (layout$type[i] %in% supportedElements) {
         ## An element of some sort
         ## Will almost certainly be more than one grob
         grobs <- vector("list", length(layoutFields))
@@ -213,7 +217,7 @@ boxViewport <- function(i, layout, yrange) {
     if (grepl("^text", layout$type[i], ignore.case=TRUE)) {
         ## No viewports from text nodes
         NULL
-    } else {
+    } else if (layout$type[i] %in% supportedElements) {
         ## An element of some sort
         viewport(x, y, w, h, default.units="native",
                  just=c("left", "bottom"),

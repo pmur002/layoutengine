@@ -56,27 +56,27 @@ grid.html("<p></p>",
                             color="red"))
 grid.newpage()
 grid.html("<p></p>",
-          engine=testEngine(c("CELL", "TEXT"),
+          engine=testEngine(c("DIV", "TEXT"),
                             "sans text\nyellow background",
                             width=1, height=1,
                             backgroundColor="yellow"))
 grid.newpage()
 grid.html("<p></p>",
-          engine=testEngine(c("CELL", "TEXT"),
+          engine=testEngine(c("DIV", "TEXT"),
                             "sans text\nwith border",
                             width=1, height=1,
                             borderLeftWidth=1, borderTopWidth=1,
                             borderRightWidth=1, borderBottomWidth=1))
 grid.newpage()
 grid.html("<p></p>",
-          engine=testEngine(c("CELL", "TEXT"),
+          engine=testEngine(c("DIV", "TEXT"),
                             "sans text\nthick border",
                             width=1, height=1,
                             borderLeftWidth=1, borderTopWidth=5,
                             borderRightWidth=1, borderBottomWidth=1))
 grid.newpage()
 grid.html("<p></p>",
-          engine=testEngine(c("CELL", "TEXT"),
+          engine=testEngine(c("DIV", "TEXT"),
                             "sans text\nred border",
                             width=1, height=1,
                             borderLeftWidth=1, borderTopWidth=1,
@@ -84,7 +84,7 @@ grid.html("<p></p>",
                             borderTopColor="red"))
 grid.newpage()
 grid.html("<p></p>",
-          engine=testEngine(c("CELL", "TEXT"),
+          engine=testEngine(c("DIV", "TEXT"),
                             "sans text\ndotted border",
                             width=1, height=1,
                             borderLeftWidth=1, borderTopWidth=1,
@@ -92,7 +92,7 @@ grid.html("<p></p>",
                             borderTopStyle="dotted"))
 grid.newpage()
 grid.html("<p></p>",
-          engine=testEngine(c("CELL", "TEXT"),
+          engine=testEngine(c("DIV", "TEXT"),
                             "sans text\ndashed border",
                             width=1, height=1,
                             borderLeftWidth=1, borderTopWidth=1,
@@ -100,7 +100,7 @@ grid.html("<p></p>",
                             borderTopStyle="dashed"))
 grid.newpage()
 grid.html("<p></p>",
-          engine=testEngine(c("CELL", "TEXT"),
+          engine=testEngine(c("DIV", "TEXT"),
                             "sans text\nhidden border",
                             width=1, height=1,
                             borderLeftWidth=1, borderTopWidth=1,
@@ -108,11 +108,11 @@ grid.html("<p></p>",
                             borderTopStyle="hidden"))
 grid.newpage()
 grid.html("<p></p>",
-          engine=testEngine(c("CELL", "TEXT"),
+          engine=testEngine(c("DIV", "TEXT"),
                             "cell with\nviewport",
                             width=1, height=1),
           viewports=TRUE)
-downViewport("CELL.1.vp")
+downViewport("DIV.1.vp")
 grid.rect()
 dev.off()
 
