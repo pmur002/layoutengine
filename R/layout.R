@@ -116,7 +116,10 @@ drawBorder <- function(border, i, layout) {
 ## Only take notice of specific elements
 supportedElements <- c("DIV", "P", "SPAN",
                        "TABLE", "TBODY", "TR", "TH", "TD")
-                       
+supportedElement <- function(x) {
+    toupper(x) %in% supportedElements
+}
+
 boxGrob <- function(i, layout, yrange) {
     ## Y measure down from top in web browser
     x <- layout$x[i]
@@ -148,7 +151,7 @@ boxGrob <- function(i, layout, yrange) {
         } else {
             tg
         }
-    } else if (layout$type[i] %in% supportedElements) {
+    } else if (supportedElement(layout$type[i])) {
         ## An element of some sort
         ## Will almost certainly be more than one grob
         grobs <- vector("list", length(layoutFields))
