@@ -17,8 +17,8 @@
 }
 \usage{
 htmlDocument(x, \dots)
-\method{htmlDocument}{character}(x, assets=NULL, \dots)
-\method{htmlDocument}{xml_document}(x, assets=NULL, \dots)
+\method{htmlDocument}{character}(x, css="", assets=NULL, \dots)
+\method{htmlDocument}{xml_document}(x, css="", assets=NULL, \dots)
 htmlElement(x, \dots)
 \method{htmlElement}{character}(x, css="", assets=NULL, \dots)
 \method{htmlElement}{xml_node}(x, css="", assets=NULL, \dots)

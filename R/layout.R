@@ -115,7 +115,9 @@ drawBorder <- function(border, i, layout) {
 
 ## Only take notice of specific elements
 supportedElements <- c("DIV", "P", "SPAN",
-                       "TABLE", "TBODY", "TR", "TH", "TD")
+                       "TABLE", "TBODY", "TR", "TH", "TD",
+                       "PRE", "CODE",
+                       "H1", "H2", "H3", "H4", "H5", "H6")
 supportedElement <- function(x) {
     toupper(x) %in% supportedElements
 }

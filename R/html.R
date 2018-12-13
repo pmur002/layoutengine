@@ -23,9 +23,10 @@ htmlDocument <- function(x, ...) {
 
 ## Assume character value is HTML
 htmlDocument.character <- function(x, 
+                                   css="",
                                    assets=NULL,
                                    ...) {
-    doc <- buildDoc(paste(x, collapse=""))
+    doc <- buildDoc(paste(x, collapse=""), css)
     obj <- list(doc=doc, assets=assets)
     class(obj) <- c("htmlDocument")
     obj
@@ -33,9 +34,10 @@ htmlDocument.character <- function(x,
 
 ## If already an xml2::xml_document, just check it is HTML
 htmlDocument.xml_document <- function(x, 
+                                      css="",
                                       assets=NULL,
                                       ...) {
-    doc <- buildDoc(as.character(x))
+    doc <- buildDoc(as.character(x), css)
     obj <- list(doc=doc, assets=assets)
     class(obj) <- c("htmlDocument")
     obj
@@ -49,7 +51,8 @@ htmlElement <- function(x, ...) {
 }
 
 ## Assume character value is HTML element
-htmlElement.character <- function(x, css="",
+htmlElement.character <- function(x,
+                                  css="",
                                   assets=NULL,
                                   ...) {
     ## Will auto-complete HTML doc (with element as only content within body)
@@ -60,7 +63,8 @@ htmlElement.character <- function(x, css="",
 }
 
 ## Valid XML, just check ok HTML
-htmlElement.xml_node <- function(x, css="",
+htmlElement.xml_node <- function(x,
+                                 css="",
                                  assets=NULL,
                                  ...) {
     doc <- buildDoc(as.character(x), css)
