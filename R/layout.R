@@ -168,37 +168,45 @@ boxGrob <- function(i, layout, yrange) {
         }
         ## Border
         if (drawBorder("Left", i, layout)) {
+            lwd <- layout$borderLeftWidth[i]
             grobs$borderLeftWidth <- 
-                segmentsGrob(x, y, x, y + h, default.units="native",
-                             gp=gpar(lineend="square",
-                                     lwd=layout$borderLeftWidth[i],
+                segmentsGrob(x + lwd/2, y, x + lwd/2, y + h,
+                             default.units="native",
+                             gp=gpar(lineend="butt",
+                                     lwd=lwd,
                                      col=col(layout$borderLeftColor[i]),
                                      lty=lty(layout$borderLeftStyle[i])),
                              name="border.left")
         } 
         if (drawBorder("Top", i, layout)) {
+            lwd <- layout$borderTopWidth[i]
             grobs$borderTopWidth <- 
-                segmentsGrob(x, y + h, x + w, y + h, default.units="native",
-                             gp=gpar(lineend="square",
-                                     lwd=layout$borderTopWidth[i],
+                segmentsGrob(x, y + h - lwd/2, x + w, y + h - lwd/2,
+                             default.units="native",
+                             gp=gpar(lineend="butt",
+                                     lwd=lwd,
                                      col=col(layout$borderTopColor[i]),
                                      lty=lty(layout$borderTopStyle[i])),
                              name="border.top")
         } 
         if (drawBorder("Right", i, layout)) {
+            lwd <- layout$borderRightWidth[i]
             grobs$borderRightWidth <- 
-                segmentsGrob(x + w, y, x + w, y + h, default.units="native",
-                             gp=gpar(lineend="square",
-                                     lwd=layout$borderRightWidth[i],
+                segmentsGrob(x + w - lwd/2, y, x + w - lwd/2, y + h,
+                             default.units="native",
+                             gp=gpar(lineend="butt",
+                                     lwd=lwd,
                                      col=col(layout$borderRightColor[i]),
                                      lty=lty(layout$borderRightStyle[i])),
                              name="border.right")
         } 
         if (drawBorder("Bottom", i, layout)) {
+            lwd <- layout$borderBottomWidth[i]
             grobs$borderBottomWidth <- 
-                segmentsGrob(x, y, x + w, y, default.units="native",
-                             gp=gpar(lineend="square",
-                                     lwd=layout$borderBottomWidth[i],
+                segmentsGrob(x, y + lwd/2, x + w, y + lwd/2,
+                             default.units="native",
+                             gp=gpar(lineend="butt",
+                                     lwd=lwd,
                                      col=col(layout$borderBottomColor[i]),
                                      lty=lty(layout$borderBottomStyle[i])),
                              name="border.bottom")
