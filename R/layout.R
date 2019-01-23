@@ -4,16 +4,22 @@
 ## ... PLUS interface for accessing info
 ## (so that we can make it more complex without changing any other code)
 
-layoutFields <- alist(type=, name=, 
+layoutFields <- alist(type=, name=,
+                      ## Box
                       x=, y=, width=, height=,
+                      ## Text
                       baseline=, text=, family=, bold=, italic=, size=, color=,
+                      direction=,
+                      ## Borders
                       backgroundColor=,
                       borderLeftWidth=, borderTopWidth=,
                       borderRightWidth=, borderBottomWidth=,
                       borderLeftStyle=, borderTopStyle=,
                       borderRightStyle=, borderBottomStyle=,
                       borderLeftColor=, borderTopColor=,
-                      borderRightColor=, borderBottomColor=)
+                      borderRightColor=, borderBottomColor=,
+                      ## Lists
+                      listStyleType=, listStylePosition=)
 
 makeLayout <- function() {}
 formals(makeLayout) <- layoutFields
@@ -113,11 +119,59 @@ drawBorder <- function(border, i, layout) {
         !transparentCol(layout[[paste0("border", border, "Color")]][i])    
 }
 
+## List item bullets
+supportedBullets <- c("disc", "circle", "square")
+
+bulletGrob <- function(x, y, w, h, type, position, direction, colour) {
+    bulletY <- y + h/2
+    if (direction == "ltr") {
+        bulletX <- x
+        if (position == "inside") {
+            dir <- 1
+            offset <- unit(0, "lines")
+            just <- "left"
+        } else {
+            dir <- -1
+            offset <- unit(-.5, "lines")
+            just <- "right"
+        }
+    } else {
+        bulletX <- x + w
+        if (position == "inside") {
+            dir <- -1
+            offset <- unit(0, "lines")
+            just <- "right"
+        } else {
+            dir <- 1
+            offset <- unit(.5, "lines")
+            just <- "left"
+        }
+    }
+    if (type == "disc") {
+        circleGrob(unit(bulletX, "native") + offset + dir*unit(.2, "lines"),
+                   unit(bulletY, "native"), 
+                   r=unit(.2, "lines"),
+                   gp=gpar(col=colour, fill=colour))
+    } else if (type == "circle") {
+        circleGrob(unit(bulletX, "native") + offset + dir*unit(.2, "lines"),
+                   unit(bulletY, "native"), 
+                   r=unit(.2, "lines"),
+                   gp=gpar(col=colour, fill=NA))
+    } else if (type == "square") {
+        rectGrob(unit(bulletX, "native") + offset,
+                 unit(bulletY, "native"),
+                 width=unit(.4, "lines"), height=unit(.4, "lines"),
+                 just=just,
+                 gp=gpar(col=colour, fill=colour))
+    }        
+}
+
 ## Only take notice of specific elements
 supportedElements <- c("DIV", "P", "SPAN",
                        "TABLE", "TBODY", "TR", "TH", "TD",
                        "PRE", "CODE",
-                       "H1", "H2", "H3", "H4", "H5", "H6")
+                       "H1", "H2", "H3", "H4", "H5", "H6",
+                       "LI")
 supportedElement <- function(x) {
     toupper(x) %in% supportedElements
 }
@@ -210,6 +264,18 @@ boxGrob <- function(i, layout, yrange) {
                                      col=col(layout$borderBottomColor[i]),
                                      lty=lty(layout$borderBottomStyle[i])),
                              name="border.bottom")
+        }
+        ## List item "bullets"
+        if (layout$type[i] == "LI") {
+            if (layout$listStyleType[i] %in% supportedBullets) {
+                grobs$listStyleType <-
+                    bulletGrob(x, y, w, h, layout$listStyleType[i],
+                               layout$listStylePosition[i],
+                               layout$direction[i],
+                               layout$color[i])
+            } else if (layout$lsitStyleType[i] != "none") {
+                warning("Unsupported list-style-type (bullet not drawn)")
+            }
         }
         gTree(children=do.call(gList, grobs[!sapply(grobs, is.null)]),
                  name=layout$name[i])

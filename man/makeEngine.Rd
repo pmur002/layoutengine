@@ -14,10 +14,11 @@
 \usage{
 makeEngine(layout, cssTransform=list())
 makeLayout(type, name, x, y, width, height, baseline, text, family, 
-    bold, italic, size, color, backgroundColor, borderLeftWidth, 
+    bold, italic, size, color, direction, backgroundColor, borderLeftWidth, 
     borderTopWidth, borderRightWidth, borderBottomWidth, borderLeftStyle, 
     borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftColor, 
-    borderTopColor, borderRightColor, borderBottomColor)
+    borderTopColor, borderRightColor, borderBottomColor,
+    listStyleType, listStylePosition)
 copyAssets(html, dir) 
 fontFiles(fonts, device)
 layoutFields
@@ -33,10 +34,11 @@ layoutFields
     components are \code{fontWeight} and \code{fontFile}.
   }
   \item{type, name, x, y, width, height, baseline, text, family, 
-    bold, italic, size, color, backgroundColor, borderLeftWidth, 
+    bold, italic, size, color, direction, backgroundColor, borderLeftWidth, 
     borderTopWidth, borderRightWidth, borderBottomWidth, borderLeftStyle, 
     borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftColor, 
-    borderTopColor, borderRightColor, borderBottomColor}{
+    borderTopColor, borderRightColor, borderBottomColor,
+    listStyleType, listStylePosition}{
     Each argument represents a field that the layout result should
     return for each node in the HTML content.
     The type, name, location and size fields must be present, but

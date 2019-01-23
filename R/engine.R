@@ -13,12 +13,19 @@ makeEngine <- function(layout, cssTransform=list()) {
 
 ## Just returns the HTML itself within the requested box size
 nullLayout <- function(html, width, height, fonts, device) {
-    layoutArgs <- list("TEXT", "text.1", 0, 0, width*dpi, height*dpi,
-                       0, as.character(html), fonts[1], FALSE, FALSE, 10, "black",
+    layoutArgs <- list("TEXT", "text.1",
+                       ## Box
+                       0, 0, width*dpi, height*dpi,
+                       ## Text
+                       0, as.character(html$doc), fonts[1], FALSE, FALSE, 10, "black",
+                       "ltr",
+                       ## Borders
                        "transparent",
                        NA, NA, NA, NA,
                        NA, NA, NA, NA,
-                       NA, NA, NA, NA)
+                       NA, NA, NA, NA,
+                       ## Lists
+                       NA, NA)
     do.call(makeLayout, layoutArgs)
 }
 

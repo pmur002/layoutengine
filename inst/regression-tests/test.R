@@ -7,6 +7,7 @@ testEngine <- function(type,
                        width=unit(1, "npc"), height=unit(1, "npc"),
                        font="sans", bold=FALSE, italic=FALSE,
                        size=12, color="black",
+                       direction="ltr",
                        backgroundColor="transparent",
                        borderLeftWidth=0,
                        borderTopWidth=0,
@@ -19,7 +20,9 @@ testEngine <- function(type,
                        borderLeftColor="black",
                        borderTopColor="black",
                        borderRightColor="black",
-                       borderBottomColor="black") {
+                       borderBottomColor="black",
+                       listStyleType="disc",
+                       listStylePosition="outside") {
     if (!is.unit(width)) width <- unit(width, "in")
     if (!is.unit(height)) height <- unit(height, "in")
     testLayout <- function(...) {
@@ -27,13 +30,15 @@ testEngine <- function(type,
                            convertWidth(width, "in", valueOnly=TRUE)*96,
                            convertHeight(height, "in", valueOnly=TRUE)*96,
                            0, text, font, bold, italic, size, color,
+                           direction,
                            backgroundColor,
                            borderLeftWidth, borderTopWidth,
                            borderRightWidth, borderBottomWidth,
                            borderLeftStyle, borderTopStyle,
                            borderRightStyle, borderBottomStyle,
                            borderLeftColor, borderTopColor,
-                           borderRightColor, borderBottomColor)
+                           borderRightColor, borderBottomColor,
+                           listStyleType, listStylePosition)
         do.call(makeLayout, layoutArgs)
     }
     makeEngine(testLayout)
@@ -114,6 +119,37 @@ grid.html("<p></p>",
           viewports=TRUE)
 downViewport("DIV.1.vp")
 grid.rect()
+grid.newpage()
+grid.html("<p></p>",
+          engine=testEngine(c("LI", "TEXT"),
+                            "disc bullet",
+                            borderLeftWidth=1, borderTopWidth=1,
+                            borderRightWidth=1, borderBottomWidth=1,
+                            width=1, height=unit(1, "lines")))
+grid.newpage()
+grid.html("<p></p>",
+          engine=testEngine(c("LI", "TEXT"),
+                            "circle bullet",
+                            borderLeftWidth=1, borderTopWidth=1,
+                            borderRightWidth=1, borderBottomWidth=1,
+                            listStyleType="circle",
+                            width=1, height=unit(1, "lines")))
+grid.newpage()
+grid.html("<p></p>",
+          engine=testEngine(c("LI", "TEXT"),
+                            "square bullet",
+                            borderLeftWidth=1, borderTopWidth=1,
+                            borderRightWidth=1, borderBottomWidth=1,
+                            listStyleType="square",
+                            width=1, height=unit(1, "lines")))
+grid.newpage()
+grid.html("<p></p>",
+          engine=testEngine(c("LI", "TEXT"),
+                            "  disc bullet INSIDE",
+                            borderLeftWidth=1, borderTopWidth=1,
+                            borderRightWidth=1, borderBottomWidth=1,
+                            listStylePosition="inside",
+                            width=1, height=unit(1, "lines")))
 dev.off()
 
 ## Check graphical output
@@ -126,6 +162,12 @@ testoutput <- function(basename) {
     modelFiles <- list.files(pattern="model-pages-.*[.]pdf")
     N <- length(modelFiles)
     allGood <- TRUE
+    testFiles <- list.files(pattern="test-pages-.*[.]pdf")
+    if (length(testFiles) != N) {
+        cat(sprintf("Number of test pages (%d) and model pages (%d) differ\n",
+                    length(testFiles), N))
+        allGood <- FALSE
+    }
     for (i in 1:N) {
         system(paste0("convert -density 96 ",
                       "model-pages-", i, ".pdf ",
