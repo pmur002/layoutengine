@@ -266,7 +266,7 @@ boxGrob <- function(i, layout, yrange) {
                              name="border.bottom")
         }
         ## List item "bullets"
-        if (layout$type[i] == "LI") {
+        if (toupper(layout$type[i]) == "LI") {
             if (layout$listStyleType[i] %in% supportedBullets) {
                 grobs$listStyleType <-
                     bulletGrob(x, y, w, h, layout$listStyleType[i],
