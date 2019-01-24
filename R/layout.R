@@ -122,7 +122,7 @@ drawBorder <- function(border, i, layout) {
 ## List item bullets
 supportedBullets <- c("disc", "circle", "square")
 
-bulletGrob <- function(x, y, w, h, type, position, direction, colour) {
+bulletGrob <- function(x, y, w, h, type, position, direction, size, colour) {
     bulletY <- y + h/2
     if (direction == "ltr") {
         bulletX <- x
@@ -132,7 +132,7 @@ bulletGrob <- function(x, y, w, h, type, position, direction, colour) {
             just <- "left"
         } else {
             dir <- -1
-            offset <- unit(-.5, "lines")
+            offset <- unit(-.5*size, "pt")
             just <- "right"
         }
     } else {
@@ -143,24 +143,24 @@ bulletGrob <- function(x, y, w, h, type, position, direction, colour) {
             just <- "right"
         } else {
             dir <- 1
-            offset <- unit(.5, "lines")
+            offset <- unit(.5*size, "pt")
             just <- "left"
         }
     }
     if (type == "disc") {
-        circleGrob(unit(bulletX, "native") + offset + dir*unit(.2, "lines"),
+        circleGrob(unit(bulletX, "native") + offset + dir*unit(.2*size, "pt"),
                    unit(bulletY, "native"), 
-                   r=unit(.2, "lines"),
+                   r=unit(.2*size, "pt"),
                    gp=gpar(col=colour, fill=colour))
     } else if (type == "circle") {
-        circleGrob(unit(bulletX, "native") + offset + dir*unit(.2, "lines"),
+        circleGrob(unit(bulletX, "native") + offset + dir*unit(.2*size, "pt"),
                    unit(bulletY, "native"), 
-                   r=unit(.2, "lines"),
+                   r=unit(.2*size, "pt"),
                    gp=gpar(col=colour, fill=NA))
     } else if (type == "square") {
         rectGrob(unit(bulletX, "native") + offset,
                  unit(bulletY, "native"),
-                 width=unit(.4, "lines"), height=unit(.4, "lines"),
+                 width=unit(.4*size, "pt"), height=unit(.4*size, "pt"),
                  just=just,
                  gp=gpar(col=colour, fill=colour))
     }        
@@ -272,6 +272,7 @@ boxGrob <- function(i, layout, yrange) {
                     bulletGrob(x, y, w, h, layout$listStyleType[i],
                                layout$listStylePosition[i],
                                layout$direction[i],
+                               layout$size[i],
                                layout$color[i])
             } else if (layout$lsitStyleType[i] != "none") {
                 warning("Unsupported list-style-type (bullet not drawn)")
