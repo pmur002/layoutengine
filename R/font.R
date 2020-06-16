@@ -26,19 +26,6 @@ fontWeightMap <-
         cssWeights = seq(100, 900, 100),
         stringsAsFactors=FALSE)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 mapFCfontWeight <- function(weight) {
     fontWeightMap$cssWeights[match(weight, fontWeightMap$fcWeights)]
 }
@@ -115,7 +102,7 @@ checkMissingType1Fonts <- function(fonts, fontTable) {
 }
 
 
-## Look up font in systemfonts::system_fonts() and
+## Look up font in extrafont::fonttable and
 ## register each font face
 Type1FontCSS <- function(fonts, cssTransform) {
     ft <- get("fontTable", envir=layoutEngineEnv)
