@@ -17,27 +17,14 @@ fontWeight <- function(bold) {
 ## https://lists.freedesktop.org/archives/fontconfig/2011-September/003647.html
 ## https://github.com/servo/libfontconfig/blob/master/fontconfig/fontconfig.h
 
-## See HTML/fontWeights/
+## Font weight to numeric
+## Ref. https://www.w3.org/TR/css-fonts-3/#font-weight-prop
 fontWeightMap <-
-    structure(list(fcWeights = 0:215, cssWeights = c(100, 100, 100, 
-101, 101, 101, 102, 102, 103, 104, 105, 105, 106, 108, 109, 110, 
-112, 113, 115, 117, 118, 120, 123, 125, 127, 130, 133, 136, 139, 
-142, 146, 149, 153, 158, 162, 167, 173, 178, 185, 192, 200, 209, 
-219, 230, 243, 255, 266, 277, 286, 294, 301, 307, 312, 317, 321, 
-325, 329, 333, 336, 339, 342, 345, 348, 351, 354, 356, 359, 362, 
-364, 367, 369, 372, 375, 378, 380, 383, 386, 390, 393, 396, 400, 
-404, 409, 413, 418, 423, 428, 434, 439, 445, 451, 457, 462, 468, 
-473, 478, 484, 488, 493, 497, 501, 505, 508, 512, 515, 518, 520, 
-523, 525, 528, 530, 532, 534, 536, 537, 539, 541, 542, 543, 544, 
-546, 547, 548, 549, 550, 551, 551, 552, 553, 554, 554, 555, 555, 
-556, 556, 557, 557, 558, 558, 559, 559, 560, 560, 560, 561, 561, 
-562, 562, 563, 563, 563, 564, 564, 565, 566, 566, 567, 567, 568, 
-569, 569, 570, 571, 572, 573, 574, 575, 576, 577, 579, 580, 581, 
-583, 585, 586, 588, 590, 592, 594, 596, 599, 601, 604, 607, 610, 
-613, 617, 620, 624, 628, 633, 637, 642, 647, 653, 659, 666, 673, 
-681, 690, 700, 712, 727, 747, 770, 797, 821, 843, 863, 883, 903, 
-922, 942, 961, 980, 1000)), .Names = c("fcWeights", "cssWeights"
-), row.names = c(NA, -216L), class = "data.frame")
+    data.frame(
+        fcWeights = c("thin", "ultralight", "light", "normal", "medium",
+                      "semibold", "bold", "ultrabold", "heavy"),
+        cssWeights = seq(100, 900, 100),
+        stringsAsFactors=FALSE)
 
 mapFCfontWeight <- function(weight) {
     fontWeightMap$cssWeights[match(weight, fontWeightMap$fcWeights)]
@@ -85,12 +72,12 @@ cairoFontCSS <- function(fonts, cssTransform) {
                              if (!is.null(cssTransform$fontWeight)) 
                                  fontWeight <-
                                      cssTransform$fontWeight(fontWeight)
-                             fontFile <- as.character(sf$file[which])
+                             fontFile <- as.character(sf$path[which])
                              if (!is.null(cssTransform$fontFile))
                                  fontFile <-
                                      cssTransform$fontFile(fontFile)
                              cssFontFace(as.character(sf$family[which]),
-                                         fontStyle(sf$slant[which] > 0),
+                                         fontStyle(sf$italic[which]),
                                          fontWeight,
                                          fontFile)
                          }))
@@ -98,12 +85,12 @@ cairoFontCSS <- function(fonts, cssTransform) {
 }
 
 checkMissingType1Fonts <- function(fonts, fontTable) {
-    missing <- !(fonts %in% fontTable$FamilyName)
+    missing <- !(fonts %in% fontTable$family)
     if (any(missing)) {
         for (i in which(missing)) {
             ## Try font names with white space removed
             trimmedFont <- gsub(" ", "", fonts[i])
-            if (trimmedFont %in% fontTable$FamilyName) {
+            if (trimmedFont %in% fontTable$family) {
                 fonts[i] <- trimmedFont
                 missing[i] <- FALSE
             } else {
@@ -123,14 +110,14 @@ Type1FontCSS <- function(fonts, cssTransform) {
     checkedFonts <- checkMissingType1Fonts(mappedFonts, ft)
     css <- unlist(lapply(checkedFonts,
                          function(font) {
-                             which <- ft$FamilyName == font
-                             fontFile <- as.character(ft$fontfile[which])
-                             if (!is.null(cssTransform$fontFile))
+                             which <- ft$family == font
+                             fontFile <- as.character(ft$path[which])
+                             if (!is.null(cssTransform$path))
                                  fontFile <-
-                                     cssTransform$fontFile(fontFile)
-                             cssFontFace(as.character(ft$FamilyName[which]),
-                                         fontStyle(ft$Italic[which]),
-                                         fontWeight(ft$Bold[which]),
+                                     cssTransform$path(fontFile)
+                             cssFontFace(as.character(ft$family[which]),
+                                         fontStyle(ft$italic[which]),
+                                         fontWeight(ft$bold[which]),
                                          fontFile)
                          }))
     paste(css, collapse="\n")
@@ -186,8 +173,8 @@ Type1FontFiles <- function(fonts) {
     checkedFonts <- checkMissingType1Fonts(mappedFonts, ft)
     unlist(lapply(checkedFonts,
                   function(font) {
-                      which <- ft$FamilyName == font
-                      as.character(ft$fontfile[which])
+                      which <- ft$family == font
+                      as.character(ft$path[which])
                   }))
 }
 
@@ -198,7 +185,7 @@ cairoFontFiles <- function(fonts) {
     unlist(lapply(fonts,
                   function(fontname) {
                       which <- sf$family == fontname
-                      as.character(sf$file[which])
+                      as.character(sf$path[which])
                   }))
 }
 
